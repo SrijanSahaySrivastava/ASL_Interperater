@@ -4,7 +4,7 @@ import numpy as np
 
 import mediapipe as mp
 
-from Mediapipe_detections import mediapipe_detection, draw_landmarks, mp_holistic
+from Mediapipe_detections import mediapipe_detection, draw_landmarks, mp_holistic, extract_keypoints
 
 
 # Create a VideoCapture object
@@ -20,6 +20,7 @@ with mp_holistic.Holistic(
         # draw landmarks
         draw_landmarks(image, results)
 
+        print(extract_keypoints(results))
         if not ret:
             print("Can't receive frame (stream end?). Exiting ...")
             break
@@ -27,4 +28,4 @@ with mp_holistic.Holistic(
         if cv2.waitKey(1) == ord("q"):
             break
     cap.release()
-    cap.destroyAllWindows()
+    # cap.destroyAllWindows()

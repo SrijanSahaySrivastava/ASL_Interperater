@@ -1,10 +1,12 @@
 import cv2
+import numpy as np
 import mediapipe as mp
 
 
 mp_holistic = mp.solutions.holistic
 mp_drawing = mp.solutions.drawing_utils
 
+# MediaPipe Detections
 def mediapipe_detection(image, model):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     image.flags.writeable = False
@@ -13,7 +15,7 @@ def mediapipe_detection(image, model):
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     return image, results
 
-
+#draw landmarks
 def draw_landmarks(image, results):
     mp_drawing.draw_landmarks(
         image, results.face_landmarks, mp_holistic.FACEMESH_TESSELATION
@@ -27,3 +29,12 @@ def draw_landmarks(image, results):
     mp_drawing.draw_landmarks(
         image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS
     )
+
+
+# Extract landmarks
+def extract_keypoints(results):
+    pose = np.array([[res.x, res.y, res.z, res.visibility] for res in results.pose_landmarks.landmark]).flatten() if results.pose_landmarks else np.zeros(33 * 4)
+    face = np.array([[res.x, res.y, res.z] for res in results.face_landmarks.landmark]).flatten() if results.face_landmarks else np.zeros(468 * 3)
+    lh = np.array([[res.x, res.y, res.z] for res in results.left_hand_landmarks.landmark]).flatten() if results.left_hand_landmarks else np.zeros(21 * 3)
+    rh = np.array([[res.x, res.y, res.z] for res in results.right_hand_landmarks.landmark]).flatten() if results.right_hand_landmarks else np.zeros(21 * 3)
+    return np.concatenate([pose, face, lh, rh])
